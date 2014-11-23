@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-hiSignal = cms.EDFilter("PyquenGeneratorFilter",
+generator = cms.EDFilter("PyquenGeneratorFilter",
                         aBeamTarget = cms.double(208.0), ## beam/target atomic number
                         comEnergy = cms.double(2760.0),
                         
@@ -66,4 +66,4 @@ configurationMetadata = cms.untracked.PSet(
     annotation = cms.untracked.string('PYTHIA (unquenched) dijets in NN (pt-hat > 460 GeV) at sqrt(s) = 2.76TeV')
     )
 
-ProductionFilterSequence = cms.Sequence(hiSignal)
+ProductionFilterSequence = cms.Sequence(generator)
