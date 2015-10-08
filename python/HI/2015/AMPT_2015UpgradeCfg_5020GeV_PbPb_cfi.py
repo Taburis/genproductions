@@ -1,61 +1,8 @@
-# Auto generated configuration file
-# using: 
-# Revision: 1.168 
-# Source: /cvs_server/repositories/CMSSW/CMSSW/Configuration/PyReleaseValidation/python/ConfigBuilder.py,v 
-# with command line options: GeneratorInterface/AMPTInterface/amptDefault_cfi.py -s GEN --conditions auto:mc --datatier GEN --eventcontent RAWSIM -n 1 --scenario HeavyIons --no_exec
 import FWCore.ParameterSet.Config as cms
 
-process = cms.Process('GEN')
 
-# import of standard configurations
-process.load('SimGeneral.MixingModule.mixNoPU_cfi')
-process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
-process.load('Configuration.Geometry.GeometrySimDB_cff')
-process.load('Configuration.StandardSequences.MagneticField_38T_cff')
-process.load('Configuration.StandardSequences.Generator_cff')
-#process.load('IOMC.EventVertexGenerators.VtxSmearedRealistic8TeVCollision_cfi')
-process.load('GeneratorInterface.Core.genFilterSummary_cff')
-process.load('Configuration.StandardSequences.SimIdeal_cff')
-process.load('Configuration.StandardSequences.EndOfProcess_cff')
-process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
-
-process.load('Configuration.StandardSequences.Services_cff')
-process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
-process.load('FWCore.MessageService.MessageLogger_cfi')
-process.load('Configuration.EventContent.EventContentHeavyIons_cff')
-
-process.load('IOMC.EventVertexGenerators.VtxSmearedNominalCollision2015_cfi')
-
-
-process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.2 $'),
-    annotation = cms.untracked.string('AMPT generator'),
-    name = cms.untracked.string('$Source: /cvs_server/repositories/CMSSW/CMSSW/GeneratorInterface/AMPTInterface/python/amptDefault_cfi.py,v $')
-)
-process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(1)
-)
-process.options = cms.untracked.PSet(
-
-)
-# Input source
-process.source = cms.Source("EmptySource")
-
-# Output definition
-process.output = cms.OutputModule("PoolOutputModule",
-    splitLevel = cms.untracked.int32(0),
-    outputCommands = process.FEVTDEBUGEventContent.outputCommands,
-    fileName = cms.untracked.string('amptStringMelting_5p02TeV_testProd_GEN.root'),
-    dataset = cms.untracked.PSet(
-        dataTier = cms.untracked.string('GEN'),
-        filterName = cms.untracked.string('')
-    ),
-    SelectEvents = cms.untracked.PSet(
-        SelectEvents = cms.vstring('generation_step')
-    )
-)
-
-# Additional output definition
+### if you want to keep the reco::GenParticle information instead of using it from HepMC,
+### you can include these next few lines
 process.output.outputCommands.append('keep recoGenParticles_*_*_*')
 
 
@@ -63,11 +10,6 @@ process.genParticles = cms.EDProducer("GenParticleProducer",
                           src = cms.InputTag("generator")
 )
 
-
-# Other statements
-from Configuration.AlCa.GlobalTag import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc_HIon', '')
-#process.GlobalTag.globaltag = 'auto_run2mc::All'
 process.generator = cms.EDFilter("AMPTGeneratorFilter",
                                  diquarky = cms.double(0.0),
                                  diquarkx = cms.double(0.0),
@@ -114,20 +56,3 @@ process.generator = cms.EDFilter("AMPTGeneratorFilter",
                                  iap = cms.int32(208)
                                  )
 
-# Path and EndPath definitions
-process.generation_step = cms.Path(process.generator*process.genParticles)
-process.simulation_step = cms.Path(process.psim)
-process.genfiltersummary_step = cms.EndPath(process.genFilterSummary)
-process.endjob_step = cms.Path(process.endOfProcess)
-process.out_step = cms.EndPath(process.output)
-
-# Schedule definition
-process.schedule = cms.Schedule(process.generation_step,process.genfiltersummary_step,process.endjob_step,process.out_step)
-
-#from IOMC.RandomEngine.RandomServiceHelper import RandomNumberServiceHelper
-#randSvc = RandomNumberServiceHelper(process.RandomNumberGeneratorService)
-#randSvc.populate()
-
-# special treatment in case of production filter sequence  
-for path in process.paths: 
-    getattr(process,path)._seq = process.generator*getattr(process,path)._seq
